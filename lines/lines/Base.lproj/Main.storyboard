@@ -16,11 +16,26 @@
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LL4-Z2-YlA">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                            </view>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="LL4-Z2-YlA" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="-20" id="Go7-4u-bjJ"/>
+                            <constraint firstItem="LL4-Z2-YlA" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="Gt3-5u-uOG"/>
+                            <constraint firstAttribute="trailing" secondItem="LL4-Z2-YlA" secondAttribute="trailing" id="Sln-nn-b9D"/>
+                            <constraint firstItem="LL4-Z2-YlA" firstAttribute="bottom" secondItem="wfy-db-euE" secondAttribute="top" id="bWQ-OW-wlo"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="backView" destination="LL4-Z2-YlA" id="VhS-ZP-03b"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="537" y="420"/>
         </scene>
     </scenes>
 </document>
