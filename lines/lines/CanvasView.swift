@@ -60,9 +60,10 @@ class CanvasView: UIView {
         let layerTransform = CATransform3DMakeAffineTransform(affineTransform)
         pointB.transform = layerTransform
         
-        // translate segment
+        // translate segment layer
         segment.anchorPoint = CGPointMake(0, 1)
         segment.position = pointA.position
+        
         // get rotation
         let originalAngle = pointB.position.angle(toPoint: pointA.position)
         let transformedPointB = CGPointMake(pointB.position.x + translation.x, pointB.position.y + translation.y),
@@ -74,7 +75,6 @@ class CanvasView: UIView {
         let originalLen = pointB.position.distance(toPoint: pointA.position),
         transformedLen = transformedPointB.distance(toPoint: pointA.position),
         scale = transformedLen / originalLen
-        
         let scaleAffineTransform = CGAffineTransformMakeScale(scale, scale)
         
         // combine two transforms
@@ -183,7 +183,7 @@ extension CGPoint {
     
     func angle(toPoint point: CGPoint) -> CGFloat {
         let sinVal = (y - point.y) / distance(toPoint: point)
-        
-        return asin(sinVal)
+        let angle = asin(sinVal)
+        return x < point.x ? CGFloat(M_PI) - angle : angle
     }
 }
