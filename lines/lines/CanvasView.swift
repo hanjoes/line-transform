@@ -52,9 +52,37 @@ class CanvasView: UIView {
     // MARK: Methods
     
     func translateAnchorPoint(byTranslation translation: CGPoint) {
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        // transform anchor and segment separately, seems very redundent.
+        // translate point
         let affineTransform = CGAffineTransformMakeTranslation(translation.x, translation.y)
         let layerTransform = CATransform3DMakeAffineTransform(affineTransform)
         pointB.transform = layerTransform
+        
+        // translate segment
+        segment.anchorPoint = CGPointMake(0, 1)
+        segment.position = pointA.position
+        // get rotation
+        let originalAngle = pointB.position.angle(toPoint: pointA.position)
+        let transformedPointB = CGPointMake(pointB.position.x + translation.x, pointB.position.y + translation.y),
+        transformedAngle = transformedPointB.angle(toPoint: pointA.position)
+        
+        let rotateAffineTransform = CGAffineTransformMakeRotation(transformedAngle - originalAngle)
+        
+        // get scale
+        let originalLen = pointB.position.distance(toPoint: pointA.position),
+        transformedLen = transformedPointB.distance(toPoint: pointA.position),
+        scale = transformedLen / originalLen
+        
+        let scaleAffineTransform = CGAffineTransformMakeScale(scale, scale)
+        
+        // combine two transforms
+        let combinedAffineTransform = CGAffineTransformConcat(rotateAffineTransform, scaleAffineTransform),
+        segmentTransform = CATransform3DMakeAffineTransform(combinedAffineTransform)
+        segment.transform = segmentTransform
+        
+        CATransaction.commit()
     }
     
     private func updateCanvasLayer() {
@@ -139,9 +167,23 @@ class CanvasView: UIView {
         segmentLayer.position = CGPointMake(canvasLayer.bounds.midX, canvasLayer.bounds.midY)
         segmentLayer.path = bezierPath.CGPath
         segmentLayer.strokeColor = UIColor.redColor().CGColor
+        segmentLayer.backgroundColor = UIColor.yellowColor().CGColor
+        segmentLayer.opacity = 0.3
         canvasLayer.addSublayer(segmentLayer)
         
         segment = segmentLayer
     }
     
+}
+
+extension CGPoint {
+    func distance(toPoint point: CGPoint) -> CGFloat {
+        return sqrt((x - point.x) * (x - point.x) + (y - point.y) * (y - point.y))
+    }
+    
+    func angle(toPoint point: CGPoint) -> CGFloat {
+        let sinVal = (y - point.y) / distance(toPoint: point)
+        
+        return asin(sinVal)
+    }
 }
