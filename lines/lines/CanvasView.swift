@@ -35,6 +35,7 @@ class CanvasView: UIView {
     
     weak var pointA: CAShapeLayer!
     weak var pointB: CAShapeLayer!
+    weak var segment: CAShapeLayer!
     
     weak var canvasLayer: CAShapeLayer! {
         didSet {
@@ -48,8 +49,13 @@ class CanvasView: UIView {
         }
     }
     
-    
     // MARK: Methods
+    
+    func translateAnchorPoint(byTranslation translation: CGPoint) {
+        let affineTransform = CGAffineTransformMakeTranslation(translation.x, translation.y)
+        let layerTransform = CATransform3DMakeAffineTransform(affineTransform)
+        pointB.transform = layerTransform
+    }
     
     private func updateCanvasLayer() {
         guard canvasLayer != nil else { return }
@@ -63,6 +69,7 @@ class CanvasView: UIView {
         canvasLayer.position = pos
         canvasLayer.backgroundColor = UIColor.whiteColor().CGColor
         
+        initializeSegment()
         initializeAnchors()
     }
     
@@ -85,7 +92,6 @@ class CanvasView: UIView {
             layerA.position = CGPointMake(xa + r, ya + r)
             layerA.path = pathA.CGPath
             layerA.strokeColor = UIColor.blackColor().CGColor
-            layerA.opacity = 0.5
             canvasLayer.addSublayer(layerA)
             
             pointA = layerA
@@ -103,12 +109,39 @@ class CanvasView: UIView {
             layerB.bounds = boundsB
             layerB.position = CGPointMake(xb + r, yb + r)
             layerB.path = pathB.CGPath
-            layerB.strokeColor = UIColor.blackColor().CGColor
-            layerB.opacity = 0.5
+            layerB.strokeColor = UIColor.greenColor().CGColor
             canvasLayer.addSublayer(layerB)
             
-            pointA = layerB
+            pointB = layerB
         }
+    }
+    
+    private func initializeSegment() {
+        // draw a segment from pointA's center to pointB's center
+        let r = Constants.PointRadius
+        let layerBounds = canvasLayer.bounds
+        
+        let bezierPath = UIBezierPath()
+        let xa = layerBounds.minX,
+        ya = layerBounds.maxY - 2 * r,
+        originA = CGPointMake(xa, ya)
+        bezierPath.moveToPoint(originA)
+        
+        let xb = layerBounds.maxX - 2 * r,
+        yb = layerBounds.minY,
+        originB = CGPointMake(xb, yb)
+        bezierPath.addLineToPoint(originB)
+        
+        let boundingBox = CGPathGetBoundingBox(bezierPath.CGPath)
+        
+        let segmentLayer = CAShapeLayer()
+        segmentLayer.bounds = boundingBox
+        segmentLayer.position = CGPointMake(canvasLayer.bounds.midX, canvasLayer.bounds.midY)
+        segmentLayer.path = bezierPath.CGPath
+        segmentLayer.strokeColor = UIColor.redColor().CGColor
+        canvasLayer.addSublayer(segmentLayer)
+        
+        segment = segmentLayer
     }
     
 }

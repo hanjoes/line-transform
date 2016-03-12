@@ -16,7 +16,21 @@ class ViewController: UIViewController {
     
     // MARK: Outlets/Actions
     
-    @IBOutlet weak var backView: UIView!
+    @IBOutlet weak var backView: UIView! {
+        didSet {
+            let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: "pan:")
+            backView.addGestureRecognizer(panGestureRecognizer)
+        }
+    }
+    
+    func pan(gesture: UIPanGestureRecognizer) {
+        let translation = gesture.translationInView(backView)
+        switch gesture.state {
+        case .Began, .Changed:
+            canvasView.translateAnchorPoint(byTranslation: translation)
+        default: break
+        }
+    }
     
     weak var canvasView: CanvasView!
     
